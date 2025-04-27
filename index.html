@@ -37,13 +37,6 @@ v1.06 (2025-04-27 18:23:12) - Bildirim konumu değişikliği
 - Bildirim animasyonu ve stili güncellendi
 - Footer ile çakışmayı önlemek için konum ayarlaması yapıldı
 
-v1.07 (2025-04-27 18:58:04) - Mobil Optimizasyon
-- Mobil cihazlar için responsive tasarım iyileştirmeleri
-- Dokunmatik ekranlar için büyük input alanları
-- iOS ve Android özel optimizasyonları
-- Mobil klavye ve input yönetimi geliştirmeleri
-- Touch feedback ve animasyon optimizasyonları
-
 Geliştirici: @tetikteyim
 -->
 
@@ -51,8 +44,7 @@ Geliştirici: @tetikteyim
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#057e92">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fatura Hesaplama</title>
     <style>
         body {
@@ -190,140 +182,6 @@ Geliştirici: @tetikteyim
                 transform: translateY(20px);
             }
         }
-
-        /* Mobil optimizasyonlar */
-        @media screen and (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                max-width: 100%;
-                padding: 0 10px;
-            }
-            
-            h1 {
-                font-size: 20px;
-                margin-bottom: 15px;
-            }
-            
-            .vergi-frame {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .vergi-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .vergi-input {
-                width: 80px;
-                height: 40px;
-                font-size: 16px;
-            }
-            
-            .input-group {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-                margin-bottom: 15px;
-            }
-            
-            .input-label {
-                font-size: 16px;
-            }
-            
-            .input-field {
-                width: 100%;
-                height: 50px;
-                font-size: 18px;
-                padding: 12px;
-            }
-            
-            .button-group {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            button {
-                width: 100%;
-                height: 50px;
-                font-size: 16px;
-            }
-            
-            .result-field {
-                width: 100%;
-                height: 50px;
-                font-size: 18px;
-                padding: 12px;
-            }
-            
-            .footer {
-                position: relative;
-                text-align: right;
-                margin-top: 20px;
-            }
-            
-            .notification {
-                width: calc(100% - 40px);
-                left: 20px;
-                right: 20px;
-                text-align: center;
-            }
-        }
-
-        /* Orta boy ekranlar */
-        @media screen and (min-width: 601px) and (max-width: 960px) {
-            .container {
-                max-width: 90%;
-            }
-            
-            .input-field,
-            .result-field {
-                height: 45px;
-                font-size: 16px;
-            }
-            
-            button {
-                height: 45px;
-            }
-        }
-
-        /* Dokunmatik optimizasyonlar */
-        @media (hover: none) {
-            button,
-            .input-field,
-            .result-field,
-            .vergi-input {
-                min-height: 44px;
-            }
-            
-            input:focus,
-            button:active {
-                transform: scale(0.98);
-            }
-            
-            .input-group + .input-group {
-                margin-top: 20px;
-            }
-        }
-
-        /* iOS optimizasyonları */
-        @supports (-webkit-touch-callout: none) {
-            input {
-                font-size: 16px !important;
-            }
-            
-            .container {
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            button {
-                -webkit-tap-highlight-color: transparent;
-                -webkit-touch-callout: none;
-            }
-        }
     </style>
 </head>
 <body>
@@ -348,11 +206,11 @@ Geliştirici: @tetikteyim
         <div class="frame-title">Değerleri Girin</div>
         <div class="input-group">
             <label class="input-label">KDV Dahil Fatura Tutarı</label>
-            <input type="text" id="kdvDahil" class="input-field" inputmode="numeric">
+            <input type="text" id="kdvDahil" class="input-field">
         </div>
         <div class="input-group">
             <label class="input-label">Net Kazanç</label>
-            <input type="text" id="netKazanc" class="input-field" inputmode="numeric">
+            <input type="text" id="netKazanc" class="input-field">
         </div>
     </div>
 
@@ -424,6 +282,7 @@ function hesapla() {
             return;
         }
 
+        // Format results with thousand separators
         document.getElementById('kdvHaric').value = formatMoney(kdvHaricFatura);
         document.getElementById('kdvDahilSonuc').value = formatMoney(kdvDahilFatura);
         document.getElementById('netKazancSonuc').value = formatMoney(netKazanc);
@@ -434,13 +293,15 @@ function hesapla() {
 
 // Input olayını düzenle
 function handleInput(element) {
-    let value = element.value.replace(/[^\d,]/g, '');
+    let value = element.value.replace(/[^\d,]/g, ''); // Sadece rakam ve virgüle izin ver
     let parts = value.split(',');
     
+    // Virgülden sonra en fazla 2 rakam
     if (parts[1] && parts[1].length > 2) {
         parts[1] = parts[1].substring(0, 2);
     }
     
+    // Tam sayı kısmına binlik ayracı ekle
     if (parts[0].length > 0) {
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
@@ -454,7 +315,7 @@ function copyResults() {
     const netKazanc = document.getElementById('netKazancSonuc').value;
     
     if (!kdvHaric || !kdvDahil || !netKazanc) {
-        return;
+        return; // Boş değerler varsa kopyalama yapma
     }
 
     const copyText = 
@@ -473,8 +334,9 @@ function showNotification() {
     const notification = document.getElementById('notification');
     notification.style.display = 'block';
     
+    // Animasyonu yeniden başlatmak için element'i yeniden oluştur
     notification.style.animation = 'none';
-    notification.offsetHeight;
+    notification.offsetHeight; // Reflow
     notification.style.animation = null;
     
     setTimeout(() => {
@@ -492,47 +354,6 @@ function temizleSonuclar() {
     document.getElementById('kdvHaric').value = '';
     document.getElementById('kdvDahilSonuc').value = '';
     document.getElementById('netKazancSonuc').value = '';
-}
-
-// Dokunmatik cihazlar için input yönetimi
-function initTouchInputs() {
-    const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-    
-    inputs.forEach(input => {
-        // Dokunmatik klavye için tip belirleme
-        if (input.classList.contains('vergi-input')) {
-            input.setAttribute('inputmode', 'decimal');
-        } else {
-            input.setAttribute('inputmode', 'numeric');
-        }
-        
-        // FastClick implementasyonu
-        input.addEventListener('touchstart', function(e) {
-            if (this.value === '0') {
-                this.value = '';
-            }
-        });
-    });
-}
-
-// Dokunmatik cihazlarda buton feedback'i
-function initTouchFeedback() {
-    const buttons = document.querySelectorAll('button');
-    
-    buttons.forEach(button => {
-        button.addEventListener('touchstart', function(e) {
-            this.style.transform = 'scale(0.98)';
-        });
-        
-        button.addEventListener('touchend', function(e) {
-            this.style.transform = 'scale(1)';
-        });
-    });
-}
-
-// Mobil cihaz kontrolü
-function isMobileDevice() {
-    return (window.innerWidth <= 600 || ('ontouchstart' in window));
 }
 
 // Input alanları için event listener'lar
@@ -554,14 +375,6 @@ document.addEventListener('keydown', function(event) {
         temizle();
     } else if (event.key === 'c' && event.ctrlKey) {
         copyResults();
-    }
-});
-
-// Sayfa yüklendiğinde mobil optimizasyonları başlat
-document.addEventListener('DOMContentLoaded', function() {
-    if (isMobileDevice()) {
-        initTouchInputs();
-        initTouchFeedback();
     }
 });
 </script>
