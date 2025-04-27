@@ -1,0 +1,570 @@
+<!--
+FATURA HESAPLAMA UYGULAMASI
+
+Versiyon Geçmişi:
+v1.00 (2025-04-27) - İlk sürüm
+- Python/Tkinter uygulamasından HTML/JavaScript'e dönüşüm yapıldı
+- Tüm temel özellikler ve görsel tasarım korundu
+
+v1.01 (2025-04-27) - Görsel düzenlemeler
+- Vergi oranları kutucukları en üste taşındı
+- Değer giriş alanları ikinci sıraya alındı
+- Hesapla/Temizle butonları yan yana hizalandı
+- Sonuç kutucukları en alta taşındı
+- Hesaplama bölümü görsel olarak yeniden düzenlendi
+
+v1.02 (2025-04-27 18:02:45) - Hesapla butonu kaldırıldı
+- Hesapla butonu kaldırıldı, sadece otomatik hesaplama aktif
+- Temizle butonu (ESC) korundu
+- Değer girişlerinde otomatik hesaplama devam ediyor
+
+v1.03 (2025-04-27 18:05:46) - Giriş alanları iyileştirmesi
+- Değer girişlerinden birine veri girildiğinde diğer giriş alanı otomatik temizleniyor
+- Kullanıcı deneyimi iyileştirildi
+
+v1.04 (2025-04-27 18:08:33) - Para birimi formatı
+- Girilen ve hesaplanan tutarlara otomatik binlik ayracı eklendi
+- Türk Lirası formatına uygun olarak virgül ve nokta kullanımı düzenlendi
+- Sayı formatı: 1.234,56 şeklinde düzenlendi
+
+v1.05 (2025-04-27 18:13:32) - Kopyalama özelliği
+- Hesaplama sonuçlarını panoya kopyalama butonu eklendi
+- Kopyalama başarılı olduğunda geçici bildirim gösterimi eklendi
+- Sonuçlar düzenli formatta kopyalanıyor
+
+v1.06 (2025-04-27 18:23:12) - Bildirim konumu değişikliği
+- Kopyalama bildirimi sağ üst yerine sağ alt köşeye taşındı
+- Bildirim animasyonu ve stili güncellendi
+- Footer ile çakışmayı önlemek için konum ayarlaması yapıldı
+
+v1.07 (2025-04-27 18:58:04) - Mobil Optimizasyon
+- Mobil cihazlar için responsive tasarım iyileştirmeleri
+- Dokunmatik ekranlar için büyük input alanları
+- iOS ve Android özel optimizasyonları
+- Mobil klavye ve input yönetimi geliştirmeleri
+- Touch feedback ve animasyon optimizasyonları
+
+Geliştirici: @tetikteyim
+-->
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#057e92">
+    <title>Fatura Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #9ed2c4;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            min-height: calc(100vh - 40px);
+        }
+        h1 {
+            color: #244444;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .frame {
+            background: #057e92;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .frame-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: white;
+        }
+        .vergi-frame {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .vergi-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .vergi-input {
+            width: 60px;
+            padding: 5px;
+            border: none;
+            border-radius: 4px;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .input-label {
+            font-size: 14px;
+        }
+        .input-field {
+            width: 200px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 160px;
+            color: white;
+        }
+        .copy-btn {
+            background: #4CAF50;
+        }
+        #temizle {
+            background: #f44336;
+        }
+        .sonuc-frame {
+            background: #0d9bb0;
+        }
+        .result-field {
+            background: white;
+            color: black;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            width: 200px;
+            text-align: right;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #244444;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .notification {
+            position: fixed;
+            bottom: 50px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            display: none;
+            animation: slideInOut 2s ease-in-out;
+            z-index: 1000;
+        }
+        @keyframes slideInOut {
+            0% { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            15% { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+            85% { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        /* Mobil optimizasyonlar */
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 0 10px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .vergi-frame {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .vergi-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .vergi-input {
+                width: 80px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+            
+            .input-label {
+                font-size: 16px;
+            }
+            
+            .input-field {
+                width: 100%;
+                height: 50px;
+                font-size: 18px;
+                padding: 12px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            button {
+                width: 100%;
+                height: 50px;
+                font-size: 16px;
+            }
+            
+            .result-field {
+                width: 100%;
+                height: 50px;
+                font-size: 18px;
+                padding: 12px;
+            }
+            
+            .footer {
+                position: relative;
+                text-align: right;
+                margin-top: 20px;
+            }
+            
+            .notification {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+                text-align: center;
+            }
+        }
+
+        /* Orta boy ekranlar */
+        @media screen and (min-width: 601px) and (max-width: 960px) {
+            .container {
+                max-width: 90%;
+            }
+            
+            .input-field,
+            .result-field {
+                height: 45px;
+                font-size: 16px;
+            }
+            
+            button {
+                height: 45px;
+            }
+        }
+
+        /* Dokunmatik optimizasyonlar */
+        @media (hover: none) {
+            button,
+            .input-field,
+            .result-field,
+            .vergi-input {
+                min-height: 44px;
+            }
+            
+            input:focus,
+            button:active {
+                transform: scale(0.98);
+            }
+            
+            .input-group + .input-group {
+                margin-top: 20px;
+            }
+        }
+
+        /* iOS optimizasyonları */
+        @supports (-webkit-touch-callout: none) {
+            input {
+                font-size: 16px !important;
+            }
+            
+            .container {
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            button {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>FATURA HESAPLAMA</h1>
+
+    <div class="frame">
+        <div class="frame-title">Vergi Oranları</div>
+        <div class="vergi-frame">
+            <div class="vergi-group">
+                <label>Gelir Vergisi Oranı (%)</label>
+                <input type="number" id="gelirVergisi" class="vergi-input" value="25">
+            </div>
+            <div class="vergi-group">
+                <label>KDV Oranı (%)</label>
+                <input type="number" id="kdvOrani" class="vergi-input" value="20">
+            </div>
+        </div>
+    </div>
+
+    <div class="frame">
+        <div class="frame-title">Değerleri Girin</div>
+        <div class="input-group">
+            <label class="input-label">KDV Dahil Fatura Tutarı</label>
+            <input type="text" id="kdvDahil" class="input-field" inputmode="numeric">
+        </div>
+        <div class="input-group">
+            <label class="input-label">Net Kazanç</label>
+            <input type="text" id="netKazanc" class="input-field" inputmode="numeric">
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="copy-btn" onclick="copyResults()">Sonuçları Kopyala</button>
+        <button id="temizle" onclick="temizle()">Temizle (ESC)</button>
+    </div>
+
+    <div class="frame sonuc-frame">
+        <div class="frame-title">Hesaplama Sonuçları</div>
+        <div class="input-group">
+            <label class="input-label">KDV Hariç Fatura Tutarı</label>
+            <input type="text" id="kdvHaric" class="result-field" readonly>
+        </div>
+        <div class="input-group">
+            <label class="input-label">KDV Dahil Fatura Tutarı</label>
+            <input type="text" id="kdvDahilSonuc" class="result-field" readonly>
+        </div>
+        <div class="input-group">
+            <label class="input-label">Net Kazanç</label>
+            <input type="text" id="netKazancSonuc" class="result-field" readonly>
+        </div>
+    </div>
+
+    <div class="footer">@tetikteyim</div>
+</div>
+
+<div id="notification" class="notification">Sonuçlar kopyalandı!</div>
+
+<script>
+// Para birimi formatlama fonksiyonu
+function formatMoney(number) {
+    return new Intl.NumberFormat('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(number);
+}
+
+// String'den sayıya çevirme (Türkçe format)
+function parseMoneyToNumber(str) {
+    if (!str) return 0;
+    return parseFloat(str.replace(/\./g, '').replace(',', '.'));
+}
+
+function digeriniTemizle(digerInputId) {
+    document.getElementById(digerInputId).value = '';
+}
+
+function hesapla() {
+    try {
+        const gelirVergisiOrani = parseFloat(document.getElementById('gelirVergisi').value) / 100;
+        const kdvOrani = parseFloat(document.getElementById('kdvOrani').value) / 100;
+
+        const kdvDahilGiris = parseMoneyToNumber(document.getElementById('kdvDahil').value);
+        const netKazancGiris = parseMoneyToNumber(document.getElementById('netKazanc').value);
+
+        let kdvHaricFatura, kdvDahilFatura, netKazanc;
+
+        if (kdvDahilGiris && !netKazancGiris) {
+            kdvDahilFatura = kdvDahilGiris;
+            kdvHaricFatura = kdvDahilFatura / (1 + kdvOrani);
+            netKazanc = kdvHaricFatura * (1 - gelirVergisiOrani);
+        } else if (netKazancGiris && !kdvDahilGiris) {
+            netKazanc = netKazancGiris;
+            kdvHaricFatura = netKazanc / (1 - gelirVergisiOrani);
+            kdvDahilFatura = kdvHaricFatura * (1 + kdvOrani);
+        } else {
+            temizleSonuclar();
+            return;
+        }
+
+        document.getElementById('kdvHaric').value = formatMoney(kdvHaricFatura);
+        document.getElementById('kdvDahilSonuc').value = formatMoney(kdvDahilFatura);
+        document.getElementById('netKazancSonuc').value = formatMoney(netKazanc);
+    } catch (error) {
+        temizleSonuclar();
+    }
+}
+
+// Input olayını düzenle
+function handleInput(element) {
+    let value = element.value.replace(/[^\d,]/g, '');
+    let parts = value.split(',');
+    
+    if (parts[1] && parts[1].length > 2) {
+        parts[1] = parts[1].substring(0, 2);
+    }
+    
+    if (parts[0].length > 0) {
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+    
+    element.value = parts.join(',');
+}
+
+function copyResults() {
+    const kdvHaric = document.getElementById('kdvHaric').value;
+    const kdvDahil = document.getElementById('kdvDahilSonuc').value;
+    const netKazanc = document.getElementById('netKazancSonuc').value;
+    
+    if (!kdvHaric || !kdvDahil || !netKazanc) {
+        return;
+    }
+
+    const copyText = 
+`FATURA HESAPLAMA SONUÇLARI
+------------------------
+KDV Hariç Fatura : ${kdvHaric} TL
+KDV Dahil Fatura : ${kdvDahil} TL
+Net Kazanç       : ${netKazanc} TL`;
+
+    navigator.clipboard.writeText(copyText).then(() => {
+        showNotification();
+    });
+}
+
+function showNotification() {
+    const notification = document.getElementById('notification');
+    notification.style.display = 'block';
+    
+    notification.style.animation = 'none';
+    notification.offsetHeight;
+    notification.style.animation = null;
+    
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 2000);
+}
+
+function temizle() {
+    document.getElementById('kdvDahil').value = '';
+    document.getElementById('netKazanc').value = '';
+    temizleSonuclar();
+}
+
+function temizleSonuclar() {
+    document.getElementById('kdvHaric').value = '';
+    document.getElementById('kdvDahilSonuc').value = '';
+    document.getElementById('netKazancSonuc').value = '';
+}
+
+// Dokunmatik cihazlar için input yönetimi
+function initTouchInputs() {
+    const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+    
+    inputs.forEach(input => {
+        // Dokunmatik klavye için tip belirleme
+        if (input.classList.contains('vergi-input')) {
+            input.setAttribute('inputmode', 'decimal');
+        } else {
+            input.setAttribute('inputmode', 'numeric');
+        }
+        
+        // FastClick implementasyonu
+        input.addEventListener('touchstart', function(e) {
+            if (this.value === '0') {
+                this.value = '';
+            }
+        });
+    });
+}
+
+// Dokunmatik cihazlarda buton feedback'i
+function initTouchFeedback() {
+    const buttons = document.querySelectorAll('button');
+    
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', function(e) {
+            this.style.transform = 'scale(0.98)';
+        });
+        
+        button.addEventListener('touchend', function(e) {
+            this.style.transform = 'scale(1)';
+        });
+    });
+}
+
+// Mobil cihaz kontrolü
+function isMobileDevice() {
+    return (window.innerWidth <= 600 || ('ontouchstart' in window));
+}
+
+// Input alanları için event listener'lar
+document.getElementById('kdvDahil').addEventListener('input', function() {
+    handleInput(this);
+    digeriniTemizle('netKazanc');
+    hesapla();
+});
+
+document.getElementById('netKazanc').addEventListener('input', function() {
+    handleInput(this);
+    digeriniTemizle('kdvDahil');
+    hesapla();
+});
+
+// Klavye kısayolları
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        temizle();
+    } else if (event.key === 'c' && event.ctrlKey) {
+        copyResults();
+    }
+});
+
+// Sayfa yüklendiğinde mobil optimizasyonları başlat
+document.addEventListener('DOMContentLoaded', function() {
+    if (isMobileDevice()) {
+        initTouchInputs();
+        initTouchFeedback();
+    }
+});
+</script>
+
+</body>
+</html>
