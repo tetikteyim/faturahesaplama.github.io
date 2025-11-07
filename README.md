@@ -49,6 +49,8 @@ Geliştirici: [@tetikteyim](https://github.com/tetikteyim)
 - Otomatik boyutlama
 
 ## 🔄 Versiyon Geçmişi
+### v1.07 (2025-11-07)
+- KDV Hariç giriş alanı eklendi
 
 ### v1.06 (2025-04-27)
 - Bildirim konumu güncellendi
