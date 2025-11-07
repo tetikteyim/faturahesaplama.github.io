@@ -37,19 +37,16 @@ v1.06 (2025-04-27 18:23:12) - Bildirim konumu değişikliği
 - Bildirim animasyonu ve stili güncellendi
 - Footer ile çakışmayı önlemek için konum ayarlaması yapıldı
 
-v1.07 (2025-04-27 18:58:04) - Mobil Optimizasyon
-- Mobil cihazlar için responsive tasarım iyileştirmeleri
-- Dokunmatik ekranlar için büyük input alanları
-- iOS ve Android özel optimizasyonları
-- Mobil klavye ve input yönetimi geliştirmeleri
-- Touch feedback ve animasyon optimizasyonları
-
-v1.08 (2025-11-07) - KDV Hariç giriş alanı eklendi
+v1.07 (2025-11-07) - KDV Hariç giriş alanı eklendi
 - Kullanıcı artık "KDV Hariç Fatura Tutarı" girişi yapabiliyor
 - Diğer iki giriş alanı otomatik temizleniyor
 - Hesaplamalar üç farklı giriş senaryosuna göre güncellendi
 - Otomatik formatlama ve kopyalama işlevleri korunuyor
 
+v1.08 (2025-11-07) - KDV ve Gelir Vergisi Tutarı kutucukları eklendi
+- Hesaplama sonuçlarına "KDV Tutarı" ve "Gelir Vergisi Tutarı" alanları eklendi
+- Hesaplama fonksiyonuna ilgili tutarlar eklendi
+- Görsel tasarım korunarak v1.07 üzerinden geliştirildi
 
 Geliştirici: @tetikteyim
 -->
@@ -129,6 +126,7 @@ Geliştirici: @tetikteyim
 
     <div class="frame sonuc-frame">
         <div class="frame-title">Hesaplama Sonuçları</div>
+
         <div class="input-group">
             <label class="input-label">KDV Hariç Fatura Tutarı</label>
             <input type="text" id="kdvHaric" class="result-field" readonly>
@@ -140,6 +138,14 @@ Geliştirici: @tetikteyim
         <div class="input-group">
             <label class="input-label">Net Kazanç</label>
             <input type="text" id="netKazancSonuc" class="result-field" readonly>
+        </div>
+        <div class="input-group">
+            <label class="input-label">KDV Tutarı</label>
+            <input type="text" id="kdvTutari" class="result-field" readonly>
+        </div>
+        <div class="input-group">
+            <label class="input-label">Gelir Vergisi Tutarı</label>
+            <input type="text" id="gelirVergisiTutari" class="result-field" readonly>
         </div>
     </div>
 
@@ -192,9 +198,16 @@ function hesapla() {
             return;
         }
 
+        // Yeni hesaplamalar
+        const kdvTutari = kdvHaricFatura * kdvOrani;
+        const gelirVergisiTutari = kdvHaricFatura * gelirVergisiOrani;
+
+        // Sonuçları yaz
         document.getElementById('kdvHaric').value = formatMoney(kdvHaricFatura);
         document.getElementById('kdvDahilSonuc').value = formatMoney(kdvDahilFatura);
         document.getElementById('netKazancSonuc').value = formatMoney(netKazanc);
+        document.getElementById('kdvTutari').value = formatMoney(kdvTutari);
+        document.getElementById('gelirVergisiTutari').value = formatMoney(gelirVergisiTutari);
     } catch (error) {
         temizleSonuclar();
     }
@@ -210,12 +223,17 @@ function copyResults() {
     const kdvHaric = document.getElementById('kdvHaric').value;
     const kdvDahil = document.getElementById('kdvDahilSonuc').value;
     const netKazanc = document.getElementById('netKazancSonuc').value;
+    const kdvTutari = document.getElementById('kdvTutari').value;
+    const gelirVergisiTutari = document.getElementById('gelirVergisiTutari').value;
+
     if (!kdvHaric || !kdvDahil || !netKazanc) return;
     const copyText =
 `FATURA HESAPLAMA SONUÇLARI
 ------------------------
 KDV Hariç Fatura : ${kdvHaric} TL
 KDV Dahil Fatura : ${kdvDahil} TL
+KDV Tutarı       : ${kdvTutari} TL
+Gelir Vergisi    : ${gelirVergisiTutari} TL
 Net Kazanç       : ${netKazanc} TL`;
     navigator.clipboard.writeText(copyText).then(showNotification);
 }
@@ -230,9 +248,8 @@ function temizle() {
     temizleSonuclar();
 }
 function temizleSonuclar() {
-    document.getElementById('kdvHaric').value = '';
-    document.getElementById('kdvDahilSonuc').value = '';
-    document.getElementById('netKazancSonuc').value = '';
+    ['kdvHaric','kdvDahilSonuc','netKazancSonuc','kdvTutari','gelirVergisiTutari']
+        .forEach(id => document.getElementById(id).value = '');
 }
 
 // Event Listeners
@@ -250,4 +267,3 @@ document.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
-
