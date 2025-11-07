@@ -2,11 +2,56 @@
 FATURA HESAPLAMA UYGULAMASI
 
 Versiyon Geçmişi:
-v1.07 (2025-11-07) - KDV Hariç giriş alanı eklendi
+v1.00 (2025-04-27) - İlk sürüm
+- Python/Tkinter uygulamasından HTML/JavaScript'e dönüşüm yapıldı
+- Tüm temel özellikler ve görsel tasarım korundu
+
+v1.01 (2025-04-27) - Görsel düzenlemeler
+- Vergi oranları kutucukları en üste taşındı
+- Değer giriş alanları ikinci sıraya alındı
+- Hesapla/Temizle butonları yan yana hizalandı
+- Sonuç kutucukları en alta taşındı
+- Hesaplama bölümü görsel olarak yeniden düzenlendi
+
+v1.02 (2025-04-27 18:02:45) - Hesapla butonu kaldırıldı
+- Hesapla butonu kaldırıldı, sadece otomatik hesaplama aktif
+- Temizle butonu (ESC) korundu
+- Değer girişlerinde otomatik hesaplama devam ediyor
+
+v1.03 (2025-04-27 18:05:46) - Giriş alanları iyileştirmesi
+- Değer girişlerinden birine veri girildiğinde diğer giriş alanı otomatik temizleniyor
+- Kullanıcı deneyimi iyileştirildi
+
+v1.04 (2025-04-27 18:08:33) - Para birimi formatı
+- Girilen ve hesaplanan tutarlara otomatik binlik ayracı eklendi
+- Türk Lirası formatına uygun olarak virgül ve nokta kullanımı düzenlendi
+- Sayı formatı: 1.234,56 şeklinde düzenlendi
+
+v1.05 (2025-04-27 18:13:32) - Kopyalama özelliği
+- Hesaplama sonuçlarını panoya kopyalama butonu eklendi
+- Kopyalama başarılı olduğunda geçici bildirim gösterimi eklendi
+- Sonuçlar düzenli formatta kopyalanıyor
+
+v1.06 (2025-04-27 18:23:12) - Bildirim konumu değişikliği
+- Kopyalama bildirimi sağ üst yerine sağ alt köşeye taşındı
+- Bildirim animasyonu ve stili güncellendi
+- Footer ile çakışmayı önlemek için konum ayarlaması yapıldı
+
+v1.07 (2025-04-27 18:58:04) - Mobil Optimizasyon
+- Mobil cihazlar için responsive tasarım iyileştirmeleri
+- Dokunmatik ekranlar için büyük input alanları
+- iOS ve Android özel optimizasyonları
+- Mobil klavye ve input yönetimi geliştirmeleri
+- Touch feedback ve animasyon optimizasyonları
+
+v1.08 (2025-11-07) - KDV Hariç giriş alanı eklendi
 - Kullanıcı artık "KDV Hariç Fatura Tutarı" girişi yapabiliyor
 - Diğer iki giriş alanı otomatik temizleniyor
 - Hesaplamalar üç farklı giriş senaryosuna göre güncellendi
 - Otomatik formatlama ve kopyalama işlevleri korunuyor
+
+
+Geliştirici: @tetikteyim
 -->
 
 <!DOCTYPE html>
@@ -205,3 +250,4 @@ document.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
+
