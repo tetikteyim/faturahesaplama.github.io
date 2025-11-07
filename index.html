@@ -2,187 +2,46 @@
 FATURA HESAPLAMA UYGULAMASI
 
 Versiyon Geçmişi:
-v1.00 (2025-04-27) - İlk sürüm
-- Python/Tkinter uygulamasından HTML/JavaScript'e dönüşüm yapıldı
-- Tüm temel özellikler ve görsel tasarım korundu
-
-v1.01 (2025-04-27) - Görsel düzenlemeler
-- Vergi oranları kutucukları en üste taşındı
-- Değer giriş alanları ikinci sıraya alındı
-- Hesapla/Temizle butonları yan yana hizalandı
-- Sonuç kutucukları en alta taşındı
-- Hesaplama bölümü görsel olarak yeniden düzenlendi
-
-v1.02 (2025-04-27 18:02:45) - Hesapla butonu kaldırıldı
-- Hesapla butonu kaldırıldı, sadece otomatik hesaplama aktif
-- Temizle butonu (ESC) korundu
-- Değer girişlerinde otomatik hesaplama devam ediyor
-
-v1.03 (2025-04-27 18:05:46) - Giriş alanları iyileştirmesi
-- Değer girişlerinden birine veri girildiğinde diğer giriş alanı otomatik temizleniyor
-- Kullanıcı deneyimi iyileştirildi
-
-v1.04 (2025-04-27 18:08:33) - Para birimi formatı
-- Girilen ve hesaplanan tutarlara otomatik binlik ayracı eklendi
-- Türk Lirası formatına uygun olarak virgül ve nokta kullanımı düzenlendi
-- Sayı formatı: 1.234,56 şeklinde düzenlendi
-
-v1.05 (2025-04-27 18:13:32) - Kopyalama özelliği
-- Hesaplama sonuçlarını panoya kopyalama butonu eklendi
-- Kopyalama başarılı olduğunda geçici bildirim gösterimi eklendi
-- Sonuçlar düzenli formatta kopyalanıyor
-
-v1.06 (2025-04-27 18:23:12) - Bildirim konumu değişikliği
-- Kopyalama bildirimi sağ üst yerine sağ alt köşeye taşındı
-- Bildirim animasyonu ve stili güncellendi
-- Footer ile çakışmayı önlemek için konum ayarlaması yapıldı
-
-Geliştirici: @tetikteyim
+v1.07 (2025-11-07) - KDV Hariç giriş alanı eklendi
+- Kullanıcı artık "KDV Hariç Fatura Tutarı" girişi yapabiliyor
+- Diğer iki giriş alanı otomatik temizleniyor
+- Hesaplamalar üç farklı giriş senaryosuna göre güncellendi
+- Otomatik formatlama ve kopyalama işlevleri korunuyor
 -->
 
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatura Hesaplama</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #9ed2c4;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            position: relative;
-            min-height: calc(100vh - 40px);
-        }
-        h1 {
-            color: #244444;
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .frame {
-            background: #057e92;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: white;
-        }
-        .frame-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: white;
-        }
-        .vergi-frame {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        .vergi-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .vergi-input {
-            width: 60px;
-            padding: 5px;
-            border: none;
-            border-radius: 4px;
-        }
-        .input-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .input-label {
-            font-size: 14px;
-        }
-        .input-field {
-            width: 200px;
-            padding: 8px;
-            border: none;
-            border-radius: 4px;
-        }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 160px;
-            color: white;
-        }
-        .copy-btn {
-            background: #4CAF50;
-        }
-        #temizle {
-            background: #f44336;
-        }
-        .sonuc-frame {
-            background: #0d9bb0;
-        }
-        .result-field {
-            background: white;
-            color: black;
-            border: none;
-            padding: 8px;
-            border-radius: 4px;
-            width: 200px;
-            text-align: right;
-        }
-        .footer {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            color: #244444;
-            font-size: 12px;
-            font-style: italic;
-        }
-        .notification {
-            position: fixed;
-            bottom: 50px;
-            right: 20px;
-            background: #4CAF50;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 5px;
-            display: none;
-            animation: slideInOut 2s ease-in-out;
-            z-index: 1000;
-        }
-        @keyframes slideInOut {
-            0% { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            15% { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-            85% { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fatura Hesaplama</title>
+<style>
+    body {font-family: Arial, sans-serif; background: #9ed2c4; margin: 0; padding: 20px; min-height: 100vh; box-sizing: border-box;}
+    .container {max-width: 600px; margin: 0 auto; position: relative; min-height: calc(100vh - 40px);}
+    h1 {color: #244444; text-align: center; font-size: 24px; margin-bottom: 20px;}
+    .frame {background: #057e92; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: white;}
+    .frame-title {font-size: 16px; font-weight: bold; margin-bottom: 15px; color: white;}
+    .vergi-frame {display: flex; justify-content: center; gap: 20px;}
+    .vergi-group {display: flex; align-items: center; gap: 10px;}
+    .vergi-input {width: 60px; padding: 5px; border: none; border-radius: 4px;}
+    .input-group {display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;}
+    .input-label {font-size: 14px;}
+    .input-field {width: 200px; padding: 8px; border: none; border-radius: 4px;}
+    .button-group {display: flex; justify-content: center; gap: 10px; margin: 20px 0;}
+    button {padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; width: 160px; color: white;}
+    .copy-btn {background: #4CAF50;}
+    #temizle {background: #f44336;}
+    .sonuc-frame {background: #0d9bb0;}
+    .result-field {background: white; color: black; border: none; padding: 8px; border-radius: 4px; width: 200px; text-align: right;}
+    .footer {position: absolute; bottom: 10px; right: 10px; color: #244444; font-size: 12px; font-style: italic;}
+    .notification {position: fixed; bottom: 50px; right: 20px; background: #4CAF50; color: white; padding: 15px 25px; border-radius: 5px; display: none; animation: slideInOut 2s ease-in-out; z-index: 1000;}
+    @keyframes slideInOut {
+        0% {opacity: 0; transform: translateY(20px);}
+        15% {opacity: 1; transform: translateY(0);}
+        85% {opacity: 1; transform: translateY(0);}
+        100% {opacity: 0; transform: translateY(20px);}
+    }
+</style>
 </head>
 <body>
 <div class="container">
@@ -204,6 +63,10 @@ Geliştirici: @tetikteyim
 
     <div class="frame">
         <div class="frame-title">Değerleri Girin</div>
+        <div class="input-group">
+            <label class="input-label">KDV Hariç Fatura Tutarı</label>
+            <input type="text" id="kdvHaricGiris" class="input-field">
+        </div>
         <div class="input-group">
             <label class="input-label">KDV Dahil Fatura Tutarı</label>
             <input type="text" id="kdvDahil" class="input-field">
@@ -241,24 +104,18 @@ Geliştirici: @tetikteyim
 <div id="notification" class="notification">Sonuçlar kopyalandı!</div>
 
 <script>
-// Para birimi formatlama fonksiyonu
 function formatMoney(number) {
-    return new Intl.NumberFormat('tr-TR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(number);
+    return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
 }
-
-// String'den sayıya çevirme (Türkçe format)
 function parseMoneyToNumber(str) {
     if (!str) return 0;
     return parseFloat(str.replace(/\./g, '').replace(',', '.'));
 }
-
-function digeriniTemizle(digerInputId) {
-    document.getElementById(digerInputId).value = '';
+function digerleriniTemizle(keepId) {
+    ['kdvDahil','netKazanc','kdvHaricGiris'].forEach(id => {
+        if (id !== keepId) document.getElementById(id).value = '';
+    });
 }
-
 function hesapla() {
     try {
         const gelirVergisiOrani = parseFloat(document.getElementById('gelirVergisi').value) / 100;
@@ -266,23 +123,30 @@ function hesapla() {
 
         const kdvDahilGiris = parseMoneyToNumber(document.getElementById('kdvDahil').value);
         const netKazancGiris = parseMoneyToNumber(document.getElementById('netKazanc').value);
+        const kdvHaricGiris = parseMoneyToNumber(document.getElementById('kdvHaricGiris').value);
 
         let kdvHaricFatura, kdvDahilFatura, netKazanc;
 
-        if (kdvDahilGiris && !netKazancGiris) {
+        if (kdvDahilGiris && !netKazancGiris && !kdvHaricGiris) {
             kdvDahilFatura = kdvDahilGiris;
             kdvHaricFatura = kdvDahilFatura / (1 + kdvOrani);
             netKazanc = kdvHaricFatura * (1 - gelirVergisiOrani);
-        } else if (netKazancGiris && !kdvDahilGiris) {
+        } 
+        else if (netKazancGiris && !kdvDahilGiris && !kdvHaricGiris) {
             netKazanc = netKazancGiris;
             kdvHaricFatura = netKazanc / (1 - gelirVergisiOrani);
             kdvDahilFatura = kdvHaricFatura * (1 + kdvOrani);
-        } else {
+        } 
+        else if (kdvHaricGiris && !kdvDahilGiris && !netKazancGiris) {
+            kdvHaricFatura = kdvHaricGiris;
+            kdvDahilFatura = kdvHaricFatura * (1 + kdvOrani);
+            netKazanc = kdvHaricFatura * (1 - gelirVergisiOrani);
+        } 
+        else {
             temizleSonuclar();
             return;
         }
 
-        // Format results with thousand separators
         document.getElementById('kdvHaric').value = formatMoney(kdvHaricFatura);
         document.getElementById('kdvDahilSonuc').value = formatMoney(kdvDahilFatura);
         document.getElementById('netKazancSonuc').value = formatMoney(netKazanc);
@@ -290,94 +154,54 @@ function hesapla() {
         temizleSonuclar();
     }
 }
-
-// Input olayını düzenle
 function handleInput(element) {
-    let value = element.value.replace(/[^\d,]/g, ''); // Sadece rakam ve virgüle izin ver
+    let value = element.value.replace(/[^\d,]/g, '');
     let parts = value.split(',');
-    
-    // Virgülden sonra en fazla 2 rakam
-    if (parts[1] && parts[1].length > 2) {
-        parts[1] = parts[1].substring(0, 2);
-    }
-    
-    // Tam sayı kısmına binlik ayracı ekle
-    if (parts[0].length > 0) {
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    }
-    
+    if (parts[1] && parts[1].length > 2) parts[1] = parts[1].substring(0, 2);
+    if (parts[0].length > 0) parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     element.value = parts.join(',');
 }
-
 function copyResults() {
     const kdvHaric = document.getElementById('kdvHaric').value;
     const kdvDahil = document.getElementById('kdvDahilSonuc').value;
     const netKazanc = document.getElementById('netKazancSonuc').value;
-    
-    if (!kdvHaric || !kdvDahil || !netKazanc) {
-        return; // Boş değerler varsa kopyalama yapma
-    }
-
-    const copyText = 
+    if (!kdvHaric || !kdvDahil || !netKazanc) return;
+    const copyText =
 `FATURA HESAPLAMA SONUÇLARI
 ------------------------
 KDV Hariç Fatura : ${kdvHaric} TL
 KDV Dahil Fatura : ${kdvDahil} TL
 Net Kazanç       : ${netKazanc} TL`;
-
-    navigator.clipboard.writeText(copyText).then(() => {
-        showNotification();
-    });
+    navigator.clipboard.writeText(copyText).then(showNotification);
 }
-
 function showNotification() {
-    const notification = document.getElementById('notification');
-    notification.style.display = 'block';
-    
-    // Animasyonu yeniden başlatmak için element'i yeniden oluştur
-    notification.style.animation = 'none';
-    notification.offsetHeight; // Reflow
-    notification.style.animation = null;
-    
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, 2000);
+    const n = document.getElementById('notification');
+    n.style.display = 'block';
+    n.style.animation = 'none'; n.offsetHeight; n.style.animation = null;
+    setTimeout(() => n.style.display = 'none', 2000);
 }
-
 function temizle() {
-    document.getElementById('kdvDahil').value = '';
-    document.getElementById('netKazanc').value = '';
+    ['kdvDahil','netKazanc','kdvHaricGiris'].forEach(id => document.getElementById(id).value = '');
     temizleSonuclar();
 }
-
 function temizleSonuclar() {
     document.getElementById('kdvHaric').value = '';
     document.getElementById('kdvDahilSonuc').value = '';
     document.getElementById('netKazancSonuc').value = '';
 }
 
-// Input alanları için event listener'lar
-document.getElementById('kdvDahil').addEventListener('input', function() {
-    handleInput(this);
-    digeriniTemizle('netKazanc');
-    hesapla();
+// Event Listeners
+['kdvDahil','netKazanc','kdvHaricGiris'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+        handleInput(this);
+        digerleriniTemizle(id);
+        hesapla();
+    });
 });
-
-document.getElementById('netKazanc').addEventListener('input', function() {
-    handleInput(this);
-    digeriniTemizle('kdvDahil');
-    hesapla();
-});
-
-// Klavye kısayolları
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        temizle();
-    } else if (event.key === 'c' && event.ctrlKey) {
-        copyResults();
-    }
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') temizle();
+    else if (e.key === 'c' && e.ctrlKey) copyResults();
 });
 </script>
-
 </body>
 </html>
